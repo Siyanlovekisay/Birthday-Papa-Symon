@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A Little Something For You</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lato:wght@300;400&family=Dancing+Script:wght@600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --violet-dark:  #3b1f5e;
+      --violet-mid:   #6b3fa0;
+      --violet-light: #c9a8f0;
+      --violet-pale:  #f3eaff;
+      --violet-seal:  #8b5cf6;
+
+      --blue-dark:    #0f2a4a;
+      --blue-mid:     #1e5799;
+      --blue-light:   #90bce8;
+      --blue-pale:    #e8f2fc;
+      --blue-seal:    #3b82f6;
+
+      --cream:  #fdfaf5;
+      --ink:    #1a1a2e;
+      --muted:  #7a7a8c;
+    }
+
+    html, body {
+      min-height: 100vh;
+      font-family: 'Lato', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        radial-gradient(ellipse at 20% 10%, rgba(107,63,160,0.07) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 90%, rgba(30,87,153,0.07) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 64px 24px 32px;
+    }
+    .header-eyebrow {
+      font-family: 'Lato', sans-serif;
+      font-weight: 300;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    header h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      color: var(--ink);
+      line-height: 1.2;
+    }
+    header p {
+      margin-top: 12px;
+      font-size: 15px;
+      color: var(--muted);
+      font-weight: 300;
+      letter-spacing: 0.3px;
+    }
+
+    .envelope-grid {
+      position: relative; z-index: 1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 48px;
+      justify-content: center;
+      padding: 32px 24px 80px;
+    }
+
+    .envelope-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .envelope {
+      width: 280px;
+      height: 200px;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.25s ease, filter 0.25s ease;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.13));
+    }
+    .envelope:hover { transform: translateY(-6px) rotate(-1deg); filter: drop-shadow(0 16px 32px rgba(0,0,0,0.18)); }
+
+    .env-body {
+      position: absolute;
+      inset: 0;
+      border-radius: 6px;
+    }
+
+    .env-flap {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 50%;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      transition: transform 0.5s ease, opacity 0.3s ease;
+      transform-origin: top center;
+    }
+
+    .env-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 50%;
+      clip-path: polygon(0 100%, 100% 100%, 50% 0);
+    }
+    .env-left {
+      position: absolute;
+      top: 0; left: 0;
+      width: 50%; height: 100%;
+      clip-path: polygon(0 0, 0 100%, 100% 50%);
+    }
+    .env-right {
+      position: absolute;
+      top: 0; right: 0;
+      width: 50%; height: 100%;
+      clip-path: polygon(100% 0, 100% 100%, 0 50%);
+    }
+
+    .env-seal {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -40%);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+
+    .env-violet .env-body    { background: var(--violet-light); }
+    .env-violet .env-flap    { background: var(--violet-mid); }
+    .env-violet .env-bottom  { background: #9b6dc8; }
+    .env-violet .env-left    { background: #b389e0; }
+    .env-violet .env-right   { background: #a070cc; }
+    .env-violet .env-seal    { background: var(--violet-seal); color: #fff; }
+
+    .env-blue .env-body    { background: var(--blue-light); }
+    .env-blue .env-flap    { background: var(--blue-mid); }
+    .env-blue .env-bottom  { background: #4a80c0; }
+    .env-blue .env-left    { background: #6a9fd4; }
+    .env-blue .env-right   { background: #5590cc; }
+    .env-blue .env-seal    { background: var(--blue-seal); color: #fff; }
+
+    .envelope-label {
+      text-align: center;
+    }
+    .envelope-label .to {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 300;
+    }
+    .envelope-label .name {
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.6rem;
+      margin-top: 2px;
+    }
+    .env-violet + .envelope-label .name { color: var(--violet-dark); }
+    .env-blue   + .envelope-label .name { color: var(--blue-dark); }
+
+    .open-btn {
+      margin-top: 4px;
+      padding: 8px 22px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+    .open-btn:hover { transform: scale(1.05); opacity: 0.88; }
+    .open-btn-violet { background: var(--violet-mid); color: #fff; }
+    .open-btn-blue   { background: var(--blue-mid);   color: #fff; }
+
+    .overlay {
+      display: none;
+      position: fixed; inset: 0; z-index: 100;
+      background: rgba(15,10,30,0.55);
+      backdrop-filter: blur(6px);
+      align-items: center; justify-content: center;
+      padding: 24px;
+    }
+    .overlay.active { display: flex; }
+
+    .pw-modal {
+      background: var(--cream);
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 100%; max-width: 360px;
+      text-align: center;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.25);
+      animation: popIn 0.3s ease;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.92) translateY(12px); opacity: 0; }
+      to   { transform: scale(1) translateY(0); opacity: 1; }
+    }
+    .pw-modal .lock-icon { font-size: 2rem; margin-bottom: 12px; }
+    .pw-modal h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+    }
+    .pw-modal p {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+    .pw-input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1.5px solid #ddd;
+      font-family: 'Lato', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+      letter-spacing: 2px;
+      text-align: center;
+    }
+    .pw-input:focus { border-color: currentColor; }
+    .pw-input.violet { color: var(--violet-mid); }
+    .pw-input.blue   { color: var(--blue-mid); }
+
+    .pw-error {
+      margin-top: 8px;
+      font-size: 12px;
+      color: #e05050;
+      min-height: 16px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .pw-error.show { opacity: 1; }
+
+    .pw-actions {
+      display: flex; gap: 10px; margin-top: 20px;
+    }
+    .btn-cancel {
+      flex: 1; padding: 11px;
+      border: 1.5px solid #ddd;
+      background: transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      color: var(--muted);
+      transition: background 0.2s;
+    }
+    .btn-cancel:hover { background: #f0f0f0; }
+    .btn-open {
+      flex: 2; padding: 11px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: 13px;
+      letter-spacing: 1px;
+      color: #fff;
+      transition: background 0.3s ease, opacity 0.2s;
+      background: #ccc; /* Default gray color when empty */
+    }
+    .btn-open:hover { opacity: 0.88; }
+    .btn-open.violet { background: var(--violet-mid); }
+    .btn-open.blue   { background: var(--blue-mid); }
+
+    .letter-modal {
+      background: var(--cream);
+      border-radius: 16px;
+      width: 100%; max-width: 540px;
+      max-height: 88vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.3);
+      animation: popIn 0.4s ease;
+      position: relative;
+    }
+
+    .letter-header {
+      padding: 36px 40px 24px;
+      border-radius: 16px 16px 0 0;
+    }
+    .letter-header.violet { background: var(--violet-pale); border-bottom: 2px solid var(--violet-light); }
+    .letter-header.blue   { background: var(--blue-pale);   border-bottom: 2px solid var(--blue-light); }
+
+    .letter-header .dear {
+      font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 6px;
+    }
+    .letter-header h2 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 2rem;
+    }
+    .letter-header h2.violet { color: var(--violet-dark); }
+    .letter-header h2.blue   { color: var(--blue-dark); }
+
+    .letter-body {
+      padding: 32px 40px 40px;
+    }
+        .letter-body p {
+      font-family: 'Lato', sans-serif; /* Changed from Playfair Display to Lato */
+      font-size: 16px;                 /* Increased size for readability */
+      line-height: 1.8;                /* Better spacing between lines */
+      color: #1a1a2e;                  /* Darker text for higher contrast */
+      margin-bottom: 16px;
+    }
+
+    .letter-sign {
+      margin-top: 24px;
+      font-family: 'Dancing Script', cursive;
+      font-size: 1.5rem;
+    }
+    .letter-sign.violet { color: var(--violet-mid); }
+    .letter-sign.blue   { color: var(--blue-mid); }
+
+    .btn-close-letter {
+      position: sticky; bottom: 0;
+      display: block;
+      width: calc(100% - 80px);
+      margin: 0 40px 32px;
+      padding: 13px;
+      border: none; border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: 12px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #fff;
+      transition: opacity 0.2s;
+    }
+    .btn-close-letter:hover { opacity: 0.88; }
+    .btn-close-letter.violet { background: var(--violet-mid); }
+    .btn-close-letter.blue   { background: var(--blue-mid); }
+
+    footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 0 24px 48px;
+      font-size: 12px;
+      color: #b0b0c0;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 480px) {
+      .pw-modal { padding: 32px 24px; }
+      .letter-header { padding: 28px 24px 20px; }
+      .letter-body { padding: 24px 24px 32px; }
+      .btn-close-letter { width: calc(100% - 48px); margin: 0 24px 24px; }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%       { transform: translateX(-8px); }
+      40%       { transform: translateX(8px); }
+      60%       { transform: translateX(-5px); }
+      80%       { transform: translateX(5px); }
+    }
+    #music-toggle {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 1000;
+      padding: 10px 15px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: 'Lato', sans-serif;
+      font-size: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="header-eyebrow">with love &amp; warmth</p>
+    <h1>A Little Something<br/>From the Heart</h1>
+    <p>Two letters, sealed just for you — tap your envelope to open.</p>
+  </header>
+  
+  <audio id="bg-music" src="./Panata.mp3" preload="auto"></audio>
+<button id="music-toggle" onclick="toggleMusic()">🎵 Play Music</button>
+
+  <div class="envelope-grid">
+    <div class="envelope-wrap">
+      <div class="envelope env-violet" id="env-brother" onclick="openPasswordModal('brother')">
+        <div class="env-body"></div><div class="env-left"></div><div class="env-right"></div><div class="env-bottom"></div><div class="env-flap"></div><div class="env-seal">✦</div>
+      </div>
+      <div class="envelope-label">
+        <div class="to">A letter for</div>
+        <div class="name" style="color:var(--violet-dark)">My Brother</div>
+      </div>
+      <button class="open-btn open-btn-violet" onclick="openPasswordModal('brother')">Open Letter</button>
+    </div>
+
+    <div class="envelope-wrap">
+      <div class="envelope env-blue" id="env-father" onclick="openPasswordModal('father')">
+        <div class="env-body"></div><div class="env-left"></div><div class="env-right"></div><div class="env-bottom"></div><div class="env-flap"></div><div class="env-seal">✦</div>
+      </div>
+      <div class="envelope-label">
+        <div class="to">A letter for</div>
+        <div class="name" style="color:var(--blue-dark)">My Father</div>
+      </div>
+      <button class="open-btn open-btn-blue" onclick="openPasswordModal('father')">Open Letter</button>
+    </div>
+  </div>
+
+  <footer>made with love ✦ just for you</footer>
+
+  <div class="overlay" id="pw-overlay">
+    <div class="pw-modal" id="pw-modal">
+      <div class="lock-icon" id="pw-icon">🔒</div>
+      <h2 id="pw-title">This letter is sealed</h2>
+      <p id="pw-subtitle">Enter the secret password to open this letter.</p>
+      <input class="pw-input" id="pw-input" type="password" placeholder="••••••••" autocomplete="off" onkeydown="if(event.key==='Enter') checkPassword()" />
+      <div class="pw-error" id="pw-error">Hmm, that's not quite right. Try again? 💌</div>
+      <div class="pw-actions">
+        <button class="btn-cancel" onclick="closePasswordModal()">Cancel</button>
+        <button class="btn-open" id="pw-submit" onclick="checkPassword()">Open ✦</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="letter-overlay">
+    <div class="letter-modal" id="letter-modal">
+      <div class="letter-header" id="letter-header">
+        <div class="dear">Dear</div>
+        <h2 class="letter-title" id="letter-title"></h2>
+      </div>
+      <div class="letter-body">
+        <div id="letter-content"></div>
+        <div class="letter-sign" id="letter-sign"></div>
+      </div>
+      <button class="btn-close-letter" id="btn-close-letter" onclick="closeLetter()">Close Letter</button>
+    </div>
+  </div>
+
+  <script>
+        const letters = {
+            brother: {
+        password: 'symon123', // Keep your password
+        color: 'violet',
+        name: 'Symon',
+        content: '<p>Dong, 18 naka! It means adult naka. Focus nata, grind nata, jogging nani ugma hahahah.</p>' +
+                 '<p>Dong, kani lang sa diamond ug tempered akong regalo nimo ha, wapa koy kwarta natigom gud.</p>' +
+                 '<p>Anyways, dong proud kaayo ko nimo naka-college najud ka, but-an pajud kaayo ka nila Mama ug Papa. Proud kaayo ko nimo dong to be honest, dili lalim agian para makasulod sa CTU.</p>' +
+                 '<p>Padayuna lang ng kabuotan nimo dong. Daghan raka makab-ot ana, naa rako permi ari maka guide sad nimo</p>' +
+                 '<p>Wishing you good luck and the best of life, dong! Happy birthday! 🎂</p>',
+        sign: '— Aswak'
+      },
+            father: {
+        password: 'papa123', // Keep your password
+        color: 'blue',
+        name: 'Papa',
+        content: '<p>Tiguwang naman na among papa uy ahahha. 42 naka pa, pero batan-on pakaay tan awn.</p>' +
+                 '<p>Salamat diay kaayo pa sa pag atiman namo. Bisag magkalisod ka usahay, unahon gihapon mi nimo.</p>' +
+                 '<p>Salamat kaayo sa tanan-tanan pa – imong mga sakripisyo ug kahago para lang makakaon mig tarung, makapalit mig mga ganahan namo, ug makalampos mi sa pag-skwela.</p>' +
+                 '<p>Salamat kaayo pa. Stay strong pa, be healthy ug happy birthday 🎂</p>',
+        sign: '— Sean'
+      }
+
+    };
+
+    let currentTarget = null;
+
+    function openPasswordModal(target) {
+      currentTarget = target;
+      const cfg = letters[target];
+      const overlay = document.getElementById('pw-overlay');
+      const input   = document.getElementById('pw-input');
+      const submit  = document.getElementById('pw-submit');
+      const error   = document.getElementById('pw-error');
+
+      document.getElementById('pw-title').textContent =
+        target === 'brother' ? 'A letter for my Brother' : 'A letter for my Father';
+      input.className = 'pw-input ' + cfg.color;
+      
+      // Reset button style
+      submit.className = 'btn-open'; 
+      input.value = '';
+      error.classList.remove('show');
+
+      overlay.classList.add('active');
+      
+      // Add the listener to change color while typing
+      input.oninput = function() {
+        if (input.value.length > 0) {
+          submit.className = 'btn-open ' + cfg.color;
+        } else {
+          submit.className = 'btn-open';
+        }
+      };
+
+      setTimeout(() => input.focus(), 300);
+    }
+
+
+    function closePasswordModal() {
+      document.getElementById('pw-overlay').classList.remove('active');
+    }
+
+    function checkPassword() {
+      const input = document.getElementById('pw-input');
+      const cfg = letters[currentTarget];
+
+      if (input.value.trim() === cfg.password) {
+        closePasswordModal();
+        // Give the password modal a tiny moment to close before showing the letter
+        setTimeout(() => {
+          openLetter(currentTarget);
+        }, 300);
+      } else {
+        alert('Wrong password!');
+      }
+    }
+
+    function openLetter(target) {
+      const cfg = letters[target];
+      const overlay = document.getElementById('letter-overlay');
+      const header = document.getElementById('letter-header');
+      const title = document.getElementById('letter-title');
+      const content = document.getElementById('letter-content');
+      const sign = document.getElementById('letter-sign');
+      const closeBtn = document.getElementById('btn-close-letter');
+
+      // Set content
+      header.className = 'letter-header ' + cfg.color;
+      title.className = 'letter-title ' + cfg.color;
+      sign.className = 'letter-sign ' + cfg.color;
+      closeBtn.className = 'btn-close-letter ' + cfg.color;
+      title.textContent = cfg.name;
+      content.innerHTML = cfg.content;
+      sign.textContent = cfg.sign;
+
+      // Show overlay with animation
+      overlay.classList.add('active');
+    }
+
+    function closeLetter() {
+      document.getElementById('letter-overlay').classList.remove('active');
+      
+          function toggleMusic() {
+      const music = document.getElementById('bg-music');
+      const btn = document.getElementById('music-toggle');
+      
+      if (music.paused) {
+        music.play();
+        btn.textContent = '🔇 Stop Music';
+      } else {
+        music.pause();
+        btn.textContent = '🎵 Play Music';
+      }
+    }
+    }
+    
+        function toggleMusic() {
+  const music = document.getElementById('bg-music');
+  const btn = document.getElementById('music-toggle');
+
+  console.log("Attempting to play: " + music.src);
+
+  if (music.paused) {
+    music.play().then(() => {
+      btn.textContent = '🔇 Stop Music';
+    }).catch((error) => {
+      alert("Error Details: " + error.name + " - " + error.message);
+    });
+  } else {
+    music.pause();
+    btn.textContent = '🎵 Play Music';
+  }
+}
+
+  </script>
+</body>
+</html>
